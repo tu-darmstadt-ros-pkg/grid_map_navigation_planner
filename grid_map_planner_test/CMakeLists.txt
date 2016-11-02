@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(grid_map_planner_lib)
+project(grid_map_planner_test)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
+
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  grid_map_core
-  grid_map_cv
-  grid_map_msgs
-  grid_map_ros
-  nav_msgs
-  roscpp
+  grid_map_planner_lib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -70,7 +68,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   geometry_msgs#   grid_map_msgs#   nav_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ################################################
@@ -103,9 +101,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES grid_map_planner_lib
-  CATKIN_DEPENDS geometry_msgs grid_map_core grid_map_cv grid_map_msgs grid_map_ros nav_msgs roscpp
+#  INCLUDE_DIRS include
+#  LIBRARIES grid_map_planner_test
+#  CATKIN_DEPENDS grid_map_planner_lib
 #  DEPENDS system_lib
 )
 
@@ -117,32 +115,14 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
-add_library(grid_map_planner_lib
-   src/grid_map_planner.cpp
-)
+add_executable(test_node src/test_node.cpp)
 
-target_link_libraries(grid_map_planner_lib
+target_link_libraries(test_node
 ${catkin_LIBRARIES}
 )
-
-
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(grid_map_planner_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Declare a C++ executable
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(grid_map_planner_lib_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
 
 #############
 ## Install ##
@@ -159,7 +139,7 @@ ${catkin_LIBRARIES}
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS grid_map_planner_lib grid_map_planner_lib_node
+# install(TARGETS grid_map_planner_test grid_map_planner_test_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -184,7 +164,7 @@ ${catkin_LIBRARIES}
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_grid_map_planner_lib.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_grid_map_planner_test.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
