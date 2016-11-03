@@ -90,6 +90,11 @@ public:
 
   void setMap(const grid_map::GridMap& map);
 
+  const grid_map::GridMap& getPlanningMap() const
+  {
+    return planning_map_;
+  }
+
 private:
 
   enum LastMode{
