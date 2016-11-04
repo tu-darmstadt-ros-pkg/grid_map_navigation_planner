@@ -56,24 +56,62 @@ using namespace grid_map_planner;
    //this->planning_map_.add("distance_transform");
 
    // See https://github.com/opencv/opencv/blob/05b15943d6a42c99e5f921b7dbaa8323f3c042c6/modules/imgproc/src/distransform.cpp
-   cv::Mat map_mat;
+
+   grid_map::Matrix& grid_data = this->planning_map_["occupancy"];
+   cv::Mat map_mat = cv::Mat::zeros(planning_map_.getSize()(0), planning_map_.getSize()(1), CV_8UC1);;
 
 
    //cv::eigen2cv(planning_map_.get("occupancy"), map_mat);
    // timing: ~10ms
-   grid_map::GridMapCvConverter::toImage<unsigned char, 1>(this->planning_map_,std::string("occupancy"),CV_8UC1, 1.0f, 0.0f, map_mat);
+   //grid_map::GridMapCvConverter::toImage<unsigned char, 1>(this->planning_map_,std::string("occupancy"),CV_8UC1, 1.0f, 0.0f, map_mat);
+
+
+   float lowerValue = 1.0;
+   float upperValue = 0.0;
+   start_time = ros::WallTime::now();
+
+   uchar *input = (uchar*)(map_mat.data);
+
+   float inv_up_subtr_low = 1.0 / (upperValue - lowerValue);
+
+   grid_map::Index index;
+   for (index(0) = 0; index(0) < planning_map_.getSize()(0); ++index(0)){
+     for (index(1) = 0; index(1) < planning_map_.getSize()(1); ++index(1)){
+
+           //for (grid_map::GridMapIterator iterator(planning_map_); !iterator.isPastEnd(); ++iterator) {
+           //const grid_map::Index index(*iterator);
+
+           //data(index(0), index(1)) = distance_transformed.at<float>(index(0), index(1));
+           //data(index(0), index(1)) =
+           //const float& value = ;
+           //const uchar imageValue = (uchar) (((grid_data(index(0), index(1)) - lowerValue) / (upperValue - lowerValue)) * (float) 255);
+
+       input[map_mat.cols * index(0) + index(1)] = (uchar) (((grid_data(index(0), index(1)) - lowerValue) * inv_up_subtr_low) * (float) 255);
+     }
+   }
+   //}
+   std::cout << "Took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
 
 
 
 
    //map_mat.at<uchar>(100, 100) = 0;
+
+   cv::namedWindow("orig");
    //map_mat.at<uchar>(101, 101) = 255;
+   cv::imshow("orig", map_mat);
+   //cv::waitKey();
 
-   //cv::namedWindow("orig");
-   //cv::imshow("orig", map_mat);
+   std::string dist_trans_layer = "distance_transform";
 
+   this->planning_map_.add(dist_trans_layer);
+   grid_map::Matrix& data = this->planning_map_[dist_trans_layer];
 
-   cv::Mat distance_transformed;
+   cv::Mat distance_transformed (data.rows(), data.cols(), CV_32FC1, data.data());
+
+   //Mat B_OpenCV(B.rows(), B.cols(), CV_32FC1, B.data());
+   //cv::eigen2cv(planning_map_.get(dist_trans_layer), distance_transformed);
 
 
    //map_mat[50000] = 0;
@@ -82,7 +120,10 @@ using namespace grid_map_planner;
    // https://github.com/opencv/opencv/blob/master/modules/imgproc/include/opencv2/imgproc.hpp#L308
    cv::distanceTransform(map_mat, distance_transformed, 2, 3);
 
-   /*
+
+
+
+
    double min;
    double max;
    cv::minMaxIdx(distance_transformed, &min, &max);
@@ -91,14 +132,16 @@ using namespace grid_map_planner;
    // Histogram Equalization
    float scale = 255 / (max-min);
    distance_transformed.convertTo(adjMap,CV_8UC1, scale, -min*scale);
-   */
-   //cv::namedWindow("bla");
-   //cv::imshow("bla", adjMap);
-   //cv::waitKey();
 
+   cv::namedWindow("bla");
+   cv::imshow("bla", adjMap);
+   cv::waitKey();
+
+   //data = data.transpose();
 
    //grid_map::GridMapCvConverter::addLayerFromImage<float, 1>(distance_transformed, std::string("distance_transform"), this->planning_map_, 0.0, max);
 
+   /*
    std::string dist_trans_layer = "distance_transform";
 
    this->planning_map_.add(dist_trans_layer);
@@ -107,22 +150,14 @@ using namespace grid_map_planner;
 
    float *input = (float*)(distance_transformed.data);
 
+
    for (grid_map::GridMapIterator iterator(planning_map_); !iterator.isPastEnd(); ++iterator) {
      const grid_map::Index index(*iterator);
-     /*
-     // Check for alpha layer.
-     if (hasAlpha) {
-       const Type_ alpha = image.at<cv::Vec<Type_, NChannels_>>(index(0), index(1))[NChannels_ - 1];
-       if (alpha < alphaTreshold) continue;
-     }
 
-     // Compute value.
-     const Type_ imageValue = imageMono.at<Type_>(index(0), index(1));
-     const float mapValue = lowerValue + mapValueDifference * ((float) imageValue / maxImageValue);
-     */
      //data(index(0), index(1)) = distance_transformed.at<float>(index(0), index(1));
      data(index(0), index(1)) = input[distance_transformed.cols * index(1) + index(0)];
    }
+   */
 
    std::cout << "Took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
 
