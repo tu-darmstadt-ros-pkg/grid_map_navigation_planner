@@ -57,7 +57,9 @@ using namespace grid_map_planner;
 
    // See https://github.com/opencv/opencv/blob/05b15943d6a42c99e5f921b7dbaa8323f3c042c6/modules/imgproc/src/distransform.cpp
 
-   grid_map::Matrix& grid_data = this->planning_map_["occupancy"];
+   grid_map::Matrix& grid_data_normal = this->planning_map_["occupancy"];
+
+   Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> grid_data = grid_data_normal;
    cv::Mat map_mat = cv::Mat::zeros(planning_map_.getSize()(0), planning_map_.getSize()(1), CV_8UC1);;
 
 
