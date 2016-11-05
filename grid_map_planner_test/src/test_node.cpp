@@ -42,19 +42,30 @@ public:
 
     map_sub_ = nh.subscribe("/map",10,&TestGridMapPlanner::map_cb,this);
 
+    map_pub_ = nh.advertise<grid_map_msgs::GridMap>("/grid_map", 2, true);
   }
 
   void map_cb(const nav_msgs::OccupancyGridConstPtr& grid_map_msg)
   {
+    ROS_INFO("Received map");
     grid_map::GridMap map;
     grid_map::GridMapRosConverter::fromOccupancyGrid(*grid_map_msg, std::string("occupancy"), map);
     gp_.setMap(map);
+
+    grid_map_msgs::GridMap grid_map_out;
+    grid_map::GridMapRosConverter::toMessage(gp_.getPlanningMap(), grid_map_out);
+
+    std::cout << "layers: " << gp_.getPlanningMap().getLayers().size() << "\n";
+    //grid_map::GridMapRosConverter::toMessage(map, grid_map_out);
+    map_pub_.publish(grid_map_out);
+    ROS_INFO("Map callback completed");
   }
 
 protected:
   grid_map_planner::GridMapPlanner gp_;
 
   ros::Subscriber map_sub_;
+  ros::Publisher map_pub_;
 
 };
 
