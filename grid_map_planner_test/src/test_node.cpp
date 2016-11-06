@@ -31,6 +31,7 @@
 #include <grid_map_planner_lib/grid_map_planner.h>
 
 #include <nav_msgs/OccupancyGrid.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
 class TestGridMapPlanner
@@ -43,6 +44,67 @@ public:
     map_sub_ = nh.subscribe("/map",10,&TestGridMapPlanner::map_cb,this);
 
     map_pub_ = nh.advertise<grid_map_msgs::GridMap>("/grid_map", 2, true);
+
+    goal_pose_sub_ = nh.subscribe("/goal", 2, &TestGridMapPlanner::goalPoseCallback, this);
+    search_pose_sub_ = nh.subscribe("/search_pose", 2, &TestGridMapPlanner::searchPoseCallback, this);
+    pose_with_cov_sub_ = nh.subscribe("/initialpose", 2, &TestGridMapPlanner::poseWithCovCallback, this);
+  }
+
+  void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+  {
+    ROS_INFO("Goal pose callback");
+
+    ros::WallTime start_time = ros::WallTime::now();
+    geometry_msgs::PoseStamped tmp;
+    std::vector<geometry_msgs::PoseStamped> path;
+    gp_.makePlan(tmp, *msg,path);
+    std::cout << "Generating plan took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+    start_time = ros::WallTime::now();
+    grid_map_msgs::GridMap grid_map_out;
+    grid_map::GridMapRosConverter::toMessage(gp_.getPlanningMap(), grid_map_out);
+
+    //grid_map::GridMapRosConverter::toMessage(map, grid_map_out);
+    map_pub_.publish(grid_map_out);
+    std::cout << "Publishing map took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+
+    //tf::Stamped<tf::Pose> robot_pose_tf;
+    //costmap_2d_ros_->getRobotPose(robot_pose_tf);
+
+    //geometry_msgs::PoseStamped pose;
+    //tf::poseStampedTFToMsg(robot_pose_tf, pose);
+    //planner_->makePlan(pose, *msg, path_.poses);
+
+    //path_.header.stamp = ros::Time::now();
+
+    //if (exploration_plan_pub_.getNumSubscribers() > 0)
+    //{
+    //  exploration_plan_pub_.publish(path_);
+    //}
+  }
+
+  void searchPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+  {
+    ROS_INFO("Search pose callback");
+
+//    tf::Stamped<tf::Pose> robot_pose_tf;
+//    costmap_2d_ros_->getRobotPose(robot_pose_tf);
+
+//    geometry_msgs::PoseStamped pose;
+//    geometry_msgs::PoseStamped pose_new;
+//    tf::poseStampedTFToMsg(robot_pose_tf, pose);
+//    planner_->getObservationPose(*msg,0.5, pose_new);
+
+//    if (search_pose_pub_.getNumSubscribers() > 0)
+//    {
+//      search_pose_pub_.publish(pose_new);
+//    }
+  }
+
+  void poseWithCovCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+  {
+
   }
 
   void map_cb(const nav_msgs::OccupancyGridConstPtr& grid_map_msg)
@@ -66,6 +128,10 @@ protected:
 
   ros::Subscriber map_sub_;
   ros::Publisher map_pub_;
+
+  ros::Subscriber goal_pose_sub_;
+  ros::Subscriber search_pose_sub_;
+  ros::Subscriber pose_with_cov_sub_;
 
 };
 

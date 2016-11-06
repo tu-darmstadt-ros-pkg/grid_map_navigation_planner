@@ -53,14 +53,49 @@ using namespace grid_map_planner;
 
    ros::WallTime start_time = ros::WallTime::now();
 
-   if (!grid_map_transforms::addDistanceTransform(this->planning_map_)){
+   if (!grid_map_transforms::addDistanceTransformCv(this->planning_map_)){
      ROS_WARN("Unable to generate distance transform!");
    }
 
+   std::cout << "Distance transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+
+   std::vector<grid_map::Index> goals;
+
+   goals.push_back(grid_map::Index(200, 310));
+
+   start_time = ros::WallTime::now();
+
+   if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
+     ROS_WARN("Unable to generate distance transform!");
+   }
+
+   std::cout << "Exploration transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+
+
    //std::cout << "layers: " << this->planning_map_.getLayers().size() << "\n";
 
+  }
 
-   std::cout << "Took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+  bool GridMapPlanner::makePlan(const geometry_msgs::PoseStamped &start,
+                                const geometry_msgs::PoseStamped &original_goal,
+                                std::vector<geometry_msgs::PoseStamped> &plan)
+  {
+    std::vector<grid_map::Index> goals;
 
+    grid_map::Index goal_index;
 
+    if (!this->planning_map_.getIndex(grid_map::Position(original_goal.pose.position.x, original_goal.pose.position.y),
+                                      goal_index))
+    {
+      ROS_WARN("Goal coords outside map, unable to plan!");
+      return false;
+    }
+
+    goals.push_back(goal_index);
+
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
+      ROS_WARN("Unable to generate distance transform!");
+    }
   }
