@@ -61,8 +61,8 @@ public:
    * @param goal The goal point (Use orientation quaternion all 0 to let exploration find goal point)
    * @param plan The generated plan
    */
-  bool makePlan(const geometry_msgs::PoseStamped &start,
-                const geometry_msgs::PoseStamped &original_goal,
+  bool makePlan(const geometry_msgs::Pose &start,
+                const geometry_msgs::Pose &original_goal,
                 std::vector<geometry_msgs::PoseStamped> &plan);
 
   /**

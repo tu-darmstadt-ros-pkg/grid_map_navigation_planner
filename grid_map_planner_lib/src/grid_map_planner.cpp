@@ -30,6 +30,7 @@
 
 #include <grid_map_cv/grid_map_cv.hpp>
 #include <grid_map_proc/grid_map_transforms.h>
+#include <grid_map_proc/grid_map_path_planning.h>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -78,15 +79,15 @@ using namespace grid_map_planner;
 
   }
 
-  bool GridMapPlanner::makePlan(const geometry_msgs::PoseStamped &start,
-                                const geometry_msgs::PoseStamped &original_goal,
+  bool GridMapPlanner::makePlan(const geometry_msgs::Pose &start,
+                                const geometry_msgs::Pose &original_goal,
                                 std::vector<geometry_msgs::PoseStamped> &plan)
   {
     std::vector<grid_map::Index> goals;
 
     grid_map::Index goal_index;
 
-    if (!this->planning_map_.getIndex(grid_map::Position(original_goal.pose.position.x, original_goal.pose.position.y),
+    if (!this->planning_map_.getIndex(grid_map::Position(original_goal.position.x, original_goal.position.y),
                                       goal_index))
     {
       ROS_WARN("Goal coords outside map, unable to plan!");
@@ -96,6 +97,15 @@ using namespace grid_map_planner;
     goals.push_back(goal_index);
 
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
-      ROS_WARN("Unable to generate distance transform!");
+      ROS_WARN("Unable to generate exploration transform!");
     }
+
+    if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
+                                                         start,
+                                                         plan)){
+      ROS_WARN("Find path on exploration transform failed!");
+      return false;
+    }
+
+    return true;
   }
