@@ -136,6 +136,19 @@ protected:
 int main(int argc, char **argv) {
   ros::init(argc, argv, ROS_PACKAGE_NAME);
 
+  /*
+  // Quickly testing storage order :)
+  Eigen::Matrix<float, 3, 3> matrix ;
+  matrix << 0, 1, 2, 3, 4 ,5 ,6 ,7 , 8;
+  std::cout << "\n" << matrix << "\n";
+  std::cout << "0,0: " << matrix(0,0) << " 0,1: " << matrix(0,1) << " 1,0: " << matrix(1,0) << "\n";
+  std::cout << "In memory:" << std::endl;
+  for (int i = 0; i < matrix.size(); i++)
+    std::cout << *(matrix.data() + i) << "  ";
+  std::cout << std::endl << std::endl;
+  */
+
+
   TestGridMapPlanner ep;
 
   ros::spin();

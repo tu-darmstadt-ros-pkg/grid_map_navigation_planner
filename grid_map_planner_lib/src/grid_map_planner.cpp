@@ -83,6 +83,31 @@ using namespace grid_map_planner;
                                 const geometry_msgs::Pose &original_goal,
                                 std::vector<geometry_msgs::PoseStamped> &plan)
   {
+
+    grid_map::Index start_index;
+
+    if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
+                                      start_index))
+    {
+      ROS_WARN("Goal coords outside map, unable to plan!");
+      return false;
+    }
+    std::vector<grid_map::Index> obstacle_cells;
+    std::vector<grid_map::Index> frontier_cells;
+
+    //if(!grid_map_transforms::collectReachableObstacleCells(this->planning_map_, start_index, obstacle_cells, frontier_cells))
+    //{
+    //  ROS_WARN("Failed computing reachable obstacle cells!");
+    //  return false;
+    //}
+
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index))
+    {
+      ROS_WARN("Failed computing reachable obstacle cells!");
+      return false;
+    }
+
+
     std::vector<grid_map::Index> goals;
 
     grid_map::Index goal_index;
@@ -95,7 +120,6 @@ using namespace grid_map_planner;
     }
 
     goals.push_back(goal_index);
-
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
       ROS_WARN("Unable to generate exploration transform!");
     }
