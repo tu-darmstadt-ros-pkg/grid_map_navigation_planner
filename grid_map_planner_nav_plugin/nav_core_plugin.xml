@@ -1,0 +1,8 @@
+<library path="lib/libgrid_map_planner_global_plugin">
+  <class name="grid_map_planner_nav_plugin/GridMapPlannerGlobalPlugin" type="grid_map_planner_nav_plugin::GridMapPlannerGlobalPlugin" base_class_type="nav_core::BaseGlobalPlanner">
+<description>
+  A global planner using the exploration transform algorithm and the ETH grid_map library as a backend.
+</description>
+</library>
+
+

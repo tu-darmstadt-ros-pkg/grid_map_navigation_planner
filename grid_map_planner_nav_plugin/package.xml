@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>grid_map_planner_nav_plugin</name>
+  <version>0.0.0</version>
+  <description>The grid_map_planner_nav_plugin package</description>
+
+  <maintainer email="kohlbrecher@sim.tu-darmstadt.de">Stefan Kohlbrecher</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>grid_map_planner_lib</build_depend>
+  <build_depend>nav_core</build_depend>
+  <build_depend>hector_nav_core</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>pluginlib</build_depend>
+  
+  <run_depend>grid_map_planner_lib</run_depend>
+  <run_depend>nav_core</run_depend>
+  <run_depend>hector_nav_core</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>pluginlib</run_depend>  
+
+  <export>
+     <nav_core plugin="${prefix}/nav_core_plugin.xml" />
+     <hector_nav_core plugin="${prefix}/hector_nav_core_plugin.xml"/>
+  </export>
+  
+</package>

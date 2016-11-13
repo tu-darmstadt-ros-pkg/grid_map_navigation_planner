@@ -1,0 +1,6 @@
+<library path="lib/libgrid_map_planner_hector_global_plugin">
+  <class name="grid_map_planner_nav_plugin/GridMapPlannerHectorGlobalPlugin" type="grid_map_planner_nav_plugin::GridMapPlannerHectorGlobalPlugin" base_class_type="hector_nav_core::ExplorationPlanner">
+<description>
+  A global planner using the exploration transform algorithm and the ETH grid_map library as a backend.
+</description>
+</library>
