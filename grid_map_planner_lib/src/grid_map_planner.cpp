@@ -58,7 +58,7 @@ using namespace grid_map_planner;
      ROS_WARN("Unable to generate distance transform!");
    }
 
-   std::cout << "Distance transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+   ROS_INFO_STREAM("Distance transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n");
 
 
    std::vector<grid_map::Index> goals;
@@ -71,7 +71,7 @@ using namespace grid_map_planner;
      ROS_WARN("Unable to generate distance transform!");
    }
 
-   std::cout << "Exploration transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+   ROS_INFO_STREAM ("Exploration transform took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n");
 
 
 
@@ -83,7 +83,7 @@ using namespace grid_map_planner;
                                 const geometry_msgs::Pose &original_goal,
                                 std::vector<geometry_msgs::PoseStamped> &plan)
   {
-
+    //return false;
     grid_map::Index start_index;
 
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),

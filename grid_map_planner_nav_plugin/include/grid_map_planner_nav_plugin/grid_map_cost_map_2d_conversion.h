@@ -48,10 +48,8 @@ public:
   
   void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
   {
-
-    if (cost_translation_table_ == NULL)
     {
-      cost_translation_table_ = new char[256];
+      cost_translation_table_.resize(256);
 
       // special values:
       cost_translation_table_[0] = 0;  // NO obstacle
@@ -109,7 +107,7 @@ protected:
   nav_msgs::OccupancyGrid grid_;
   grid_map::GridMap grid_map_;
 
-  char* cost_translation_table_;
+  std::vector<char> cost_translation_table_;
 };
 
 
