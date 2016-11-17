@@ -122,6 +122,7 @@ using namespace grid_map_planner;
     goals.push_back(goal_index);
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
       ROS_WARN("Unable to generate exploration transform!");
+      return false;
     }
 
     if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
@@ -130,6 +131,8 @@ using namespace grid_map_planner;
       ROS_WARN("Find path on exploration transform failed!");
       return false;
     }
+
+    plan.back().pose.orientation = original_goal.orientation;
 
     return true;
   }
