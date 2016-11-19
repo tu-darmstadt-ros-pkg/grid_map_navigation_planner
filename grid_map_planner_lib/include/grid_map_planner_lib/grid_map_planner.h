@@ -70,7 +70,7 @@ public:
     * @param start The start point
     * @param plan The plan to explore into unknown space
     */
-  //bool doExploration(const geometry_msgs::PoseStamped &start,std::vector<geometry_msgs::PoseStamped> &plan);
+  bool doExploration(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan);
 
   /**
     * This can be used if there are no frontiers to unknown space left in the map. The robot will retrieve it's path travelled so far via a service
@@ -90,7 +90,7 @@ public:
   
 
 
-  void setMap(const grid_map::GridMap& map);
+  bool setMap(const grid_map::GridMap& map);
 
   const grid_map::GridMap& getPlanningMap() const
   {
@@ -106,6 +106,8 @@ private:
 
   grid_map::GridMap planning_map_;
 
+  std::vector<grid_map::Index> obstacle_cells_;
+  std::vector<grid_map::Index> frontier_cells_;
 
 
 };

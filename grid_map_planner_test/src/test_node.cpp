@@ -52,6 +52,7 @@ public:
     goal_pose_sub_ = nh.subscribe("/goal", 2, &TestGridMapPlanner::goalPoseCallback, this);
     search_pose_sub_ = nh.subscribe("/search_pose", 2, &TestGridMapPlanner::searchPoseCallback, this);
     pose_with_cov_sub_ = nh.subscribe("/initialpose", 2, &TestGridMapPlanner::poseWithCovCallback, this);
+    eploration_start_pose_sub_ = nh.subscribe("/explore_initialpose", 2, &TestGridMapPlanner::explorePoseCallback, this);
   }
 
   void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -72,6 +73,28 @@ public:
     ROS_INFO("Start pose callback");
     start_pose = msg->pose.pose;
     this->plan_path_to_goal();
+  }
+
+  void explorePoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+  {
+    ROS_INFO("Explore pose callback");
+
+    ros::WallTime start_time = ros::WallTime::now();
+
+    nav_msgs::Path path;
+    path.header.stamp = ros::Time::now();
+    path.header.frame_id = "map";
+
+    gp_.doExploration(msg->pose.pose, path.poses);
+
+    path_pub_.publish(path);
+
+    grid_map_msgs::GridMap grid_map_out;
+    grid_map::GridMapRosConverter::toMessage(gp_.getPlanningMap(), grid_map_out);
+    std::cout << "Planning exploration took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+    //grid_map::GridMapRosConverter::toMessage(map, grid_map_out);
+    map_pub_.publish(grid_map_out);
   }
 
   void map_cb(const nav_msgs::OccupancyGridConstPtr& grid_map_msg)
@@ -127,6 +150,7 @@ protected:
   ros::Subscriber goal_pose_sub_;
   ros::Subscriber search_pose_sub_;
   ros::Subscriber pose_with_cov_sub_;
+  ros::Subscriber eploration_start_pose_sub_;
 
   geometry_msgs::Pose start_pose;
   geometry_msgs::Pose goal_pose;

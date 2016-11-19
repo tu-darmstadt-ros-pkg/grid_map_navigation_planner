@@ -48,10 +48,10 @@ using namespace grid_map_planner;
   {
   }
 
-  void GridMapPlanner::setMap(const grid_map::GridMap& map)
+  bool GridMapPlanner::setMap(const grid_map::GridMap& map)
   {
    this->planning_map_ = map;
-
+   /*
    ros::WallTime start_time = ros::WallTime::now();
 
    if (!grid_map_transforms::addDistanceTransformCv(this->planning_map_)){
@@ -76,7 +76,39 @@ using namespace grid_map_planner;
 
 
    //std::cout << "layers: " << this->planning_map_.getLayers().size() << "\n";
+   */
+  }
 
+  bool GridMapPlanner::doExploration(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan)
+  {
+    grid_map::Index start_index;
+
+    if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
+                                      start_index))
+    {
+      ROS_WARN("Goal coords outside map, unable to plan!");
+      return false;
+    }
+
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+    {
+      ROS_WARN("Failed to compute distance transform!");
+      return false;
+    }
+
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, frontier_cells_)){
+      ROS_WARN("Unable to generate exploration transform!");
+      return false;
+    }
+
+    if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
+                                                         start,
+                                                         plan)){
+      ROS_WARN("Find path on exploration transform failed!");
+      return false;
+    }
+
+    return true;
   }
 
   bool GridMapPlanner::makePlan(const geometry_msgs::Pose &start,
@@ -92,16 +124,8 @@ using namespace grid_map_planner;
       ROS_WARN("Goal coords outside map, unable to plan!");
       return false;
     }
-    std::vector<grid_map::Index> obstacle_cells;
-    std::vector<grid_map::Index> frontier_cells;
 
-    //if(!grid_map_transforms::collectReachableObstacleCells(this->planning_map_, start_index, obstacle_cells, frontier_cells))
-    //{
-    //  ROS_WARN("Failed computing reachable obstacle cells!");
-    //  return false;
-    //}
-
-    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index))
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
     {
       ROS_WARN("Failed computing reachable obstacle cells!");
       return false;
