@@ -113,7 +113,8 @@ using namespace grid_map_planner;
 
   bool GridMapPlanner::makePlan(const geometry_msgs::Pose &start,
                                 const geometry_msgs::Pose &original_goal,
-                                std::vector<geometry_msgs::PoseStamped> &plan)
+                                std::vector<geometry_msgs::PoseStamped> &plan,
+                                float* plan_cost)
   {
     //return false;
     grid_map::Index start_index;
@@ -151,7 +152,8 @@ using namespace grid_map_planner;
 
     if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
                                                          start,
-                                                         plan)){
+                                                         plan,
+                                                         plan_cost)){
       ROS_WARN("Find path on exploration transform failed!");
       return false;
     }

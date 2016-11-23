@@ -63,7 +63,8 @@ public:
    */
   bool makePlan(const geometry_msgs::Pose &start,
                 const geometry_msgs::Pose &original_goal,
-                std::vector<geometry_msgs::PoseStamped> &plan);
+                std::vector<geometry_msgs::PoseStamped> &plan,
+                float* plan_cost = 0);
 
   /**
     * Given a start point, finds a frontier between known and unknown space and generates a plan to go there
