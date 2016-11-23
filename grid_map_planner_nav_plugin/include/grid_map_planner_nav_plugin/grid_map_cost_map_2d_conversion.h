@@ -105,7 +105,6 @@ public:
 protected:  
   costmap_2d::Costmap2DROS* costmap_ros_;
   nav_msgs::OccupancyGrid grid_;
-  grid_map::GridMap grid_map_;
 
   std::vector<char> cost_translation_table_;
 };
