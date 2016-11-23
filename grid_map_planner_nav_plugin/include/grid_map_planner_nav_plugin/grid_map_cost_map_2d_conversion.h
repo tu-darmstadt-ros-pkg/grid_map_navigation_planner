@@ -98,8 +98,7 @@ public:
       grid_.data[i] = cost_translation_table_[ data[ i ]];
     }
 
-    grid_map::GridMapRosConverter::fromOccupancyGrid(grid_, "occupancy", grid_map_out);
-
+    return grid_map::GridMapRosConverter::fromOccupancyGrid(grid_, "occupancy", grid_map_out);
   }
   
 protected:  
