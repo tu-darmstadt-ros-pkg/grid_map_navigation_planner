@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES grid_map_planner_nav_plugin
+  LIBRARIES grid_map_planner_hector_global_plugin grid_map_planner_global_plugin
   CATKIN_DEPENDS grid_map_planner_lib nav_core hector_nav_core roscpp pluginlib
 )
 
