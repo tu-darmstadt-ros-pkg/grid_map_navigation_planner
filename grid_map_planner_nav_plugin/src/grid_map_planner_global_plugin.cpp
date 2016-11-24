@@ -47,11 +47,32 @@ GridMapPlannerGlobalPlugin::~GridMapPlannerGlobalPlugin()
 bool GridMapPlannerGlobalPlugin::makePlan(const geometry_msgs::PoseStamped& start,
                       const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan)
 {
-
+  std::string frame = converter_.getCostmap()->getGlobalFrameID();
+  
+  if(start.header.frame_id != frame) {
+    ROS_ERROR_STREAM("Start passed to GridMapPlannerGlobalPlugin must be in frame " << frame << ", but is instead in frame " << start.header.frame_id);
+    return false;
+  }
+  
+  if(goal.header.frame_id != frame) {
+    ROS_ERROR_STREAM("Goal passed to GridMapPlannerGlobalPlugin must be in frame " << frame << ", but is instead in frame " << goal.header.frame_id);
+    return false;
+  }
+  
   grid_map::GridMap map;
   converter_.convertToGridMap(map);
   grid_map_planner_->setMap(map);
-  return grid_map_planner_->makePlan(start.pose, goal.pose, plan);
+  bool ret = grid_map_planner_->makePlan(start.pose, goal.pose, plan);
+  
+  // fill up header of plan
+  if(ret) {    
+    for(auto& pose: plan) {
+        pose.header.stamp = ros::Time::now();
+        pose.header.frame_id = frame;
+    }
+  }
+  
+  return ret;
 }
 
 void GridMapPlannerGlobalPlugin::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros)

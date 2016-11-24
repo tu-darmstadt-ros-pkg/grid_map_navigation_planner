@@ -101,6 +101,10 @@ public:
     return grid_map::GridMapRosConverter::fromOccupancyGrid(grid_, "occupancy", grid_map_out);
   }
   
+  costmap_2d::Costmap2DROS* getCostmap() {
+    return costmap_ros_;
+  }
+  
 protected:  
   costmap_2d::Costmap2DROS* costmap_ros_;
   nav_msgs::OccupancyGrid grid_;
