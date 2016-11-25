@@ -36,6 +36,8 @@
 // Grid Map
 #include <grid_map_core/GridMap.hpp>
 
+#include <grid_map_planner_lib/grid_map_planner_goal_types.h>
+
 //#include <dynamic_reconfigure/server.h>
 
 
