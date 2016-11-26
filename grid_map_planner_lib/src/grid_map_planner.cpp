@@ -79,7 +79,7 @@ using namespace grid_map_planner;
    */
   }
 
-  bool GridMapPlanner::doExploration(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan)
+  bool GridMapPlanner::makeExplorationPlan(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan)
   {
     grid_map::Index start_index;
 
@@ -159,6 +159,75 @@ using namespace grid_map_planner;
     }
 
     plan.back().pose.orientation = original_goal.orientation;
+
+    return true;
+  }
+
+  bool GridMapPlanner::makePlan(const geometry_msgs::Pose &start,
+                                const std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> >& map_goals,
+                                std::vector<geometry_msgs::PoseStamped> &plan,
+                                int reached_goal_idx,
+                                float* plan_cost)
+  {
+    //return false;
+    grid_map::Index start_index;
+
+    if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
+                                      start_index))
+    {
+      ROS_WARN("Goal coords outside map, unable to plan!");
+      return false;
+    }
+
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+    {
+      ROS_WARN("Failed computing reachable obstacle cells!");
+      return false;
+    }
+
+
+    std::vector<grid_map::Index> goals;
+    //grid_map::Index goal_index;
+
+    for (size_t i = 0; i < map_goals.size(); ++i)
+    {
+      map_goals[i]->getGoalIndices(goals);
+    }
+
+    std::cout << "map_goals size " << map_goals.size() << " goals size: " << goals.size() << "\n";
+
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
+      ROS_WARN("Unable to generate exploration transform!");
+      return false;
+    }
+
+    if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
+                                                         start,
+                                                         plan,
+                                                         plan_cost)){
+      ROS_WARN("Find path on exploration transform failed!");
+      return false;
+    }
+
+    grid_map::Index found_goal_idx;
+    this->planning_map_.getIndex(grid_map::Position(plan.back().pose.position.x, plan.back().pose.position.y), found_goal_idx);
+
+    if (map_goals.size() == 1){
+      reached_goal_idx = 0;
+      //plan.back().pose.orientation = original_goal.orientation;
+    }else{
+
+      for (size_t i = 0; i < map_goals.size(); ++i)
+      {
+        if (map_goals[i]->isReached(found_goal_idx))
+        {
+          reached_goal_idx = i;
+          break;
+        }
+      }
+    }
+
+    plan.back().pose.orientation = map_goals[reached_goal_idx]->getOrientation();
 
     return true;
   }

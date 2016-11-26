@@ -80,7 +80,10 @@ std::string frame = converter_.getCostmap()->getGlobalFrameID();
 bool GridMapPlannerHectorGlobalPlugin::doExploration(const geometry_msgs::PoseStamped &start,
     std::vector<geometry_msgs::PoseStamped> &plan)
 {
-  return false;
+  grid_map::GridMap map;
+  converter_.convertToGridMap(map);
+  grid_map_planner_->setMap(map);
+  return grid_map_planner_->makeExplorationPlan(start.pose, plan);
 }
 
 void GridMapPlannerHectorGlobalPlugin::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
