@@ -38,16 +38,28 @@
 
 namespace grid_map_planner_goal_types{
 
-
+/**
+ * @brief The MapGoalBase class is the abstract base class for all map goal types
+ */
 class MapGoalBase
 {
 public:
-  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices) = 0;
+
+  /**
+   * @brief This functions collects all goal_indices represented by this map goal
+   */
+  virtual bool getGoalIndices(std::vector<grid_map::Index>& goal_indices) = 0;
   
+  /**
+   * @brief This functions is used to check if the provided goal index belongs to
+   * this map goal.
+   */
   virtual bool isReached(const grid_map::Index& reached_goal_idx) const = 0;
   
-  virtual bool isSingleGoal() = 0;
-
+  /**
+   * @brief getOrientation
+   * @return The orientation used for this map goal
+   */
   virtual geometry_msgs::Quaternion getOrientation() const = 0;
   
 };
@@ -63,7 +75,7 @@ public:
     orientation_ = pose.orientation;
   }
   
-  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices){
+  virtual bool getGoalIndices(std::vector<grid_map::Index>& goal_indices){
     goal_indices.push_back(goal_idx_);
   }
   
@@ -76,11 +88,7 @@ public:
   {
     return orientation_;
   }
-  
-  virtual bool isSingleGoal() const{
-    return true;
-  }
-  
+    
 private:
   grid_map::Index goal_idx_;
   geometry_msgs::Quaternion orientation_;
@@ -102,7 +110,7 @@ public:
     grid_map.getIndex(grid_map::Position(line_end_in.x, line_end_in.y), line_end);
   }
   
-  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices)
+  virtual bool getGoalIndices(std::vector<grid_map::Index>& goal_indices)
   {
     for (grid_map::LineIterator iterator (grid_map_, line_start, line_end);
          !iterator.isPastEnd(); ++iterator) {
@@ -133,11 +141,7 @@ public:
 
     return quat;
   }
-  
-  virtual bool isSingleGoal() const{
-    return false;
-  }
-  
+
 private:
   grid_map::Index line_start;
   grid_map::Index line_end;

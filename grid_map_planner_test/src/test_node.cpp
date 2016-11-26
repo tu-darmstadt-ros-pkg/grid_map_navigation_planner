@@ -52,7 +52,9 @@ public:
     goal_pose_sub_ = nh.subscribe("/goal", 2, &TestGridMapPlanner::goalPoseCallback, this);
     search_pose_sub_ = nh.subscribe("/search_pose", 2, &TestGridMapPlanner::searchPoseCallback, this);
     pose_with_cov_sub_ = nh.subscribe("/initialpose", 2, &TestGridMapPlanner::poseWithCovCallback, this);
-    eploration_start_pose_sub_ = nh.subscribe("/explore_initialpose", 2, &TestGridMapPlanner::explorePoseCallback, this);
+    exploration_start_pose_sub_ = nh.subscribe("/explore_initialpose", 2, &TestGridMapPlanner::explorePoseCallback, this);
+    multi_goal_start_pose_sub_ = nh.subscribe("/multi_goal_initialpose", 2, &TestGridMapPlanner::multiGoalPoseCallback, this);
+
   }
 
   void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -92,6 +94,55 @@ public:
     grid_map_msgs::GridMap grid_map_out;
     grid_map::GridMapRosConverter::toMessage(gp_.getPlanningMap(), grid_map_out);
     std::cout << "Planning exploration took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
+
+    //grid_map::GridMapRosConverter::toMessage(map, grid_map_out);
+    map_pub_.publish(grid_map_out);
+  }
+
+  void multiGoalPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+  {
+    ROS_INFO("Multi goal pose callback");
+
+    ros::WallTime start_time = ros::WallTime::now();
+
+    nav_msgs::Path path;
+    path.header.stamp = ros::Time::now();
+    path.header.frame_id = "map";
+
+    std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> > map_goals;
+
+    geometry_msgs::Point line_start;
+    line_start.x = -5.0;
+    line_start.y = -5.0;
+
+    geometry_msgs::Point line_end;
+    line_end.x = 5.0;
+    line_end.y = 5.0;
+
+
+    map_goals.push_back(boost::make_shared<grid_map_planner_goal_types::LineSegmentGoal>(
+                                            line_start,
+                                            line_end,
+                                            0.0,
+                                            gp_.getPlanningMap()));
+
+    geometry_msgs::Pose goal_pose;
+    goal_pose.position.x = -2.0;
+    goal_pose.position.y = -0.4;
+    goal_pose.orientation.w = 1.0;
+    map_goals.push_back(boost::make_shared<grid_map_planner_goal_types::PoseGoal>(
+                                            goal_pose,
+                                            gp_.getPlanningMap()));
+
+
+    int reached_idx;
+    gp_.makePlan(msg->pose.pose, map_goals, path.poses, reached_idx);
+
+    path_pub_.publish(path);
+
+    grid_map_msgs::GridMap grid_map_out;
+    grid_map::GridMapRosConverter::toMessage(gp_.getPlanningMap(), grid_map_out);
+    std::cout << "Planning multi goal path took " << (ros::WallTime::now() - start_time).toSec() * 1000 << " ms\n";
 
     //grid_map::GridMapRosConverter::toMessage(map, grid_map_out);
     map_pub_.publish(grid_map_out);
@@ -150,7 +201,8 @@ protected:
   ros::Subscriber goal_pose_sub_;
   ros::Subscriber search_pose_sub_;
   ros::Subscriber pose_with_cov_sub_;
-  ros::Subscriber eploration_start_pose_sub_;
+  ros::Subscriber exploration_start_pose_sub_;
+  ros::Subscriber multi_goal_start_pose_sub_;
 
   geometry_msgs::Pose start_pose;
   geometry_msgs::Pose goal_pose;

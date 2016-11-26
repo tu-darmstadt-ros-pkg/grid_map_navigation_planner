@@ -51,23 +51,29 @@ class GridMapPlanner {
 public:
   GridMapPlanner();
   ~GridMapPlanner();
-  //HectorExplorationPlanner(std::string name,costmap_2d::Costmap2DROS *costmap_ros);
-  //void initialize(std::string name,costmap_2d::Costmap2DROS *costmap_ros);
-
-  //void dynRecParamCallback(hector_exploration_planner::ExplorationPlannerConfig &config, uint32_t level);
 
   /**
-   * Plans from start to given goal. If orientation quaternion of goal is all zeros, calls exploration instead. This is a hacky workaround that
-   * has to be refactored.
+   * Plans from start to given goal.
    * @param start The start point
-   * @param goal The goal point (Use orientation quaternion all 0 to let exploration find goal point)
+   * @param goal The goal point
    * @param plan The generated plan
+   * @param plan_cost The plan cost for the returned plan
    */
   bool makePlan(const geometry_msgs::Pose &start,
                 const geometry_msgs::Pose &original_goal,
                 std::vector<geometry_msgs::PoseStamped> &plan,
                 float* plan_cost = 0);
 
+  /**
+   * Plans from start the goal point with the least cost to reach.
+   * If the found goal point is part of multiple map_goals, only the first
+   * one found is returned in reached_goal_idx and it's orientation used.
+   * @param start The start point
+   * @param map_goals A vector of allowed goals
+   * @param plan The generated plan
+   * @param reached_goal_idx The index the reached goal belongs to in map_goals
+   * @param plan_cost The plan cost for the returned plan
+   */
   bool makePlan(const geometry_msgs::Pose &start,
                 const std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> >& map_goals,
                 std::vector<geometry_msgs::PoseStamped> &plan,
@@ -92,9 +98,7 @@ public:
   //bool getObservationPose(const geometry_msgs::PoseStamped& observation_pose, const double desired_distance, geometry_msgs::PoseStamped& new_observation_pose);
 
   //bool doAlternativeExploration(const geometry_msgs::PoseStamped &start,std::vector<geometry_msgs::PoseStamped> &plan, std::vector<geometry_msgs::PoseStamped> &oldplan);
-  //bool findFrontiers(std::vector<geometry_msgs::PoseStamped> &frontiers, std::vector<geometry_msgs::PoseStamped> &noFrontiers);
   //bool findFrontiersCloseToPath(std::vector<geometry_msgs::PoseStamped> &frontiers);
-  //bool findFrontiers(std::vector<geometry_msgs::PoseStamped> &frontiers);
   //bool findInnerFrontier(std::vector<geometry_msgs::PoseStamped> &innerFrontier);
   
 
