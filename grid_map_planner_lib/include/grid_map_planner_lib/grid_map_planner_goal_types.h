@@ -33,7 +33,7 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Point.h>
 
-#include <grid_map_core/GridMap.hpp>
+#include <grid_map_core/grid_map_core.hpp>
 
 
 namespace grid_map_planner_goal_types{
@@ -42,11 +42,13 @@ namespace grid_map_planner_goal_types{
 class MapGoalBase
 {
 public:
-  virtual bool addToExplorationGoalLayer(grid_map::Matrix& exploration_grid_data) = 0;
+  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices) = 0;
   
-  virtual bool checkIfReached(const grid_map::Matrix& exploration_grid_data) = 0;
+  virtual bool isReached(const grid_map::Index& reached_goal_idx) const = 0;
   
   virtual bool isSingleGoal() = 0;
+
+  virtual geometry_msgs::Quaternion getOrientation() const = 0;
   
 };
 
@@ -54,24 +56,34 @@ class PoseGoal: public MapGoalBase
 {
   
 public:
-  PoseGoal(const geometry_msgs::Pose pose)
-  : goal (pose)
-  {}
-  
-  virtual bool addToExplorationGoalLayer(grid_map::Matrix& exploration_grid_data){
-    
+  PoseGoal(const geometry_msgs::Pose& pose,
+           const grid_map::GridMap& grid_map)
+  {
+    grid_map.getIndex(grid_map::Position(pose.position.x, pose.position.y), goal_idx_);
+    orientation_ = pose.orientation;
   }
   
-  virtual bool checkIfReached(const grid_map::Matrix& exploration_grid_data){
-    
+  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices){
+    goal_indices.push_back(goal_idx_);
   }
   
-  virtual bool isSingleGoal(){
-    return false;
+  virtual bool isReached(const grid_map::Index& reached_goal_idx) const
+  {
+    return goal_idx_.matrix() == reached_goal_idx.matrix();
+  }
+
+  geometry_msgs::Quaternion getOrientation() const
+  {
+    return orientation_;
+  }
+  
+  virtual bool isSingleGoal() const{
+    return true;
   }
   
 private:
-  geometry_msgs::Pose goal;
+  grid_map::Index goal_idx_;
+  geometry_msgs::Quaternion orientation_;
 };
 
 class LineSegmentGoal: public MapGoalBase
@@ -81,30 +93,56 @@ public:
   
   LineSegmentGoal(const geometry_msgs::Point& line_start_in,
                   const geometry_msgs::Point& line_end_in,
-                  double yaw_in)
-  : line_start(line_start_in)
-  , line_end(line_end_in)
-  , yaw(yaw_in)
-  {}
-  
-  virtual bool addToExplorationGoalLayer(grid_map::Matrix& exploration_grid_data)
+                  double yaw_in,
+                  const grid_map::GridMap& grid_map)
+    : grid_map_(grid_map)
   {
-    
+    goal_yaw_ = yaw_in;
+    grid_map.getIndex(grid_map::Position(line_start_in.x, line_start_in.y), line_start);
+    grid_map.getIndex(grid_map::Position(line_end_in.x, line_end_in.y), line_end);
   }
   
-  virtual bool checkIfReached(const grid_map::Matrix& exploration_grid_data)
+  virtual bool getGoalIndices(std::vector<grid_map::Index> goal_indices)
   {
-    
+    for (grid_map::LineIterator iterator (grid_map_, line_start, line_end);
+         !iterator.isPastEnd(); ++iterator) {
+
+      const grid_map::Index index(*iterator);
+
+      goal_indices.push_back(index);
+    }
   }
   
-  virtual bool isSingleGoal(){
+  virtual bool isReached(const grid_map::Index& reached_goal_idx) const
+  {
+    for (grid_map::LineIterator iterator (grid_map_, line_start, line_end);
+         !iterator.isPastEnd(); ++iterator) {
+
+       const grid_map::Index index(*iterator);
+
+       if (index.matrix() == reached_goal_idx.matrix()){
+         return true;
+       }
+    }
+    return false;
+  }
+
+  geometry_msgs::Quaternion getOrientation() const
+  {
+    geometry_msgs::Quaternion quat;
+
+    return quat;
+  }
+  
+  virtual bool isSingleGoal() const{
     return false;
   }
   
 private:
-  geometry_msgs::Point line_start;
-  geometry_msgs::Point line_end;
-  float yaw;  
+  grid_map::Index line_start;
+  grid_map::Index line_end;
+  double goal_yaw_;
+  const grid_map::GridMap& grid_map_;
 };
 
 

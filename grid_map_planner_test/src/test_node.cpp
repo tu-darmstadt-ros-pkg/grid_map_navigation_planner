@@ -85,7 +85,7 @@ public:
     path.header.stamp = ros::Time::now();
     path.header.frame_id = "map";
 
-    gp_.doExploration(msg->pose.pose, path.poses);
+    gp_.makeExplorationPlan(msg->pose.pose, path.poses);
 
     path_pub_.publish(path);
 

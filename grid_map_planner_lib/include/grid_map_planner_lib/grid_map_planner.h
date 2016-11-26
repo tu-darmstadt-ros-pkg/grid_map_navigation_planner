@@ -68,12 +68,18 @@ public:
                 std::vector<geometry_msgs::PoseStamped> &plan,
                 float* plan_cost = 0);
 
+  bool makePlan(const geometry_msgs::Pose &start,
+                const std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> >& map_goals,
+                std::vector<geometry_msgs::PoseStamped> &plan,
+                int reached_goal_idx,
+                float* plan_cost = 0);
+
   /**
     * Given a start point, finds a frontier between known and unknown space and generates a plan to go there
     * @param start The start point
     * @param plan The plan to explore into unknown space
     */
-  bool doExploration(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan);
+  bool makeExplorationPlan(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan);
 
   /**
     * This can be used if there are no frontiers to unknown space left in the map. The robot will retrieve it's path travelled so far via a service
