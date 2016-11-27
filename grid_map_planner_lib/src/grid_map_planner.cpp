@@ -166,7 +166,7 @@ using namespace grid_map_planner;
   bool GridMapPlanner::makePlan(const geometry_msgs::Pose &start,
                                 const std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> >& map_goals,
                                 std::vector<geometry_msgs::PoseStamped> &plan,
-                                int reached_goal_idx,
+                                int& reached_goal_idx,
                                 float* plan_cost)
   {
     //return false;
