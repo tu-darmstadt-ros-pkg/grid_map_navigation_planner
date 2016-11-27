@@ -139,6 +139,9 @@ public:
   {
     geometry_msgs::Quaternion quat;
 
+    quat.z = sin(goal_yaw_*0.5f);
+    quat.w = cos(goal_yaw_*0.5f);
+
     return quat;
   }
 
