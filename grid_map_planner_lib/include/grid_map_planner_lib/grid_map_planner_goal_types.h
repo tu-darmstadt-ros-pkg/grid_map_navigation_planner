@@ -118,6 +118,8 @@ public:
 
       const grid_map::Index index(*iterator);
 
+      //std::cout << "goal idx:\n" << index << "\n";
+
       goal_indices.push_back(index);
     }
     
@@ -126,10 +128,14 @@ public:
   
   virtual bool isReached(const grid_map::Index& reached_goal_idx) const
   {
+    //std::cout << "reached_goal idx:\n" << reached_goal_idx << "\n";
     for (grid_map::LineIterator iterator (grid_map_, line_start, line_end);
          !iterator.isPastEnd(); ++iterator) {
 
        const grid_map::Index index(*iterator);
+
+       //std::cout << "test idx:\n" << index << "\n";
+
 
        if (index.matrix() == reached_goal_idx.matrix()){
          return true;

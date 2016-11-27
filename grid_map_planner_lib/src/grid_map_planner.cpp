@@ -194,7 +194,7 @@ using namespace grid_map_planner;
       map_goals[i]->getGoalIndices(goals);
     }
 
-    std::cout << "map_goals size " << map_goals.size() << " goals size: " << goals.size() << "\n";
+    //std::cout << "map_goals size " << map_goals.size() << " goals size: " << goals.size() << "\n";
 
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
       ROS_WARN("Unable to generate exploration transform!");
@@ -214,7 +214,6 @@ using namespace grid_map_planner;
 
     if (map_goals.size() == 1){
       reached_goal_idx = 0;
-      //plan.back().pose.orientation = original_goal.orientation;
     }else{
 
       for (size_t i = 0; i < map_goals.size(); ++i)
