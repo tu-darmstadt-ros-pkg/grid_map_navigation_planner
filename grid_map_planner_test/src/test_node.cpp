@@ -112,12 +112,12 @@ public:
     std::vector<boost::shared_ptr<grid_map_planner_goal_types::MapGoalBase> > map_goals;
 
     geometry_msgs::Point line_start;
-    line_start.x = -5.0;
-    line_start.y = -5.0;
+    line_start.x = 20;
+    line_start.y = -0.5;
 
     geometry_msgs::Point line_end;
-    line_end.x = 5.0;
-    line_end.y = 5.0;
+    line_end.x = 20;
+    line_end.y = -2;
 
 
     map_goals.push_back(boost::make_shared<grid_map_planner_goal_types::LineSegmentGoal>(
@@ -125,10 +125,10 @@ public:
                                             line_end,
                                             0.0,
                                             gp_.getPlanningMap()));
-
+                                            
     geometry_msgs::Pose goal_pose;
-    goal_pose.position.x = -2.0;
-    goal_pose.position.y = -0.4;
+    goal_pose.position.x = 12.51;
+    goal_pose.position.y = -6.1;
     goal_pose.orientation.w = 1.0;
     map_goals.push_back(boost::make_shared<grid_map_planner_goal_types::PoseGoal>(
                                             goal_pose,
