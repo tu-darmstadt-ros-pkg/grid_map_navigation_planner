@@ -77,6 +77,7 @@ public:
   
   virtual bool getGoalIndices(std::vector<grid_map::Index>& goal_indices){
     goal_indices.push_back(goal_idx_);
+    return true;
   }
   
   virtual bool isReached(const grid_map::Index& reached_goal_idx) const
@@ -119,6 +120,8 @@ public:
 
       goal_indices.push_back(index);
     }
+    
+    return true;
   }
   
   virtual bool isReached(const grid_map::Index& reached_goal_idx) const
