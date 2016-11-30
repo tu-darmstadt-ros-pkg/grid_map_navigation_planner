@@ -50,7 +50,13 @@ using namespace grid_map_planner;
 
   bool GridMapPlanner::setMap(const grid_map::GridMap& map)
   {
+    if (!map.exists("occupancy")){
+      ROS_ERROR("Tried to set map for grid map planner, but has no occupancy layer!");
+      return false;
+    }
+
    this->planning_map_ = map;
+   return true;
    /*
    ros::WallTime start_time = ros::WallTime::now();
 
@@ -81,6 +87,12 @@ using namespace grid_map_planner;
 
   bool GridMapPlanner::makeExplorationPlan(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan)
   {
+    if (!this->planning_map_.exists("occupancy")){
+      ROS_ERROR("Tried to generate exploration plan, but map has no occupancy layer!");
+      return false;
+    }
+
+
     grid_map::Index start_index;
 
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
@@ -116,7 +128,11 @@ using namespace grid_map_planner;
                                 std::vector<geometry_msgs::PoseStamped> &plan,
                                 float* plan_cost)
   {
-    //return false;
+    if (!this->planning_map_.exists("occupancy")){
+      ROS_ERROR("Tried to generate plan to goal, but map has no occupancy layer!");
+      return false;
+    }
+
     grid_map::Index start_index;
 
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
@@ -169,6 +185,12 @@ using namespace grid_map_planner;
                                 int& reached_goal_idx,
                                 float* plan_cost)
   {
+    if (!this->planning_map_.exists("occupancy")){
+      ROS_ERROR("Tried to generate plan to multiple goal poses, but map has no occupancy layer!");
+      return false;
+    }
+
+
     //return false;
     grid_map::Index start_index;
 
