@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find grid_map_planner_test)/rviz/default_grid_map_test.rviz"/>
+</launch>

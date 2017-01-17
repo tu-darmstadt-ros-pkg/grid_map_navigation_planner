@@ -160,7 +160,15 @@ using namespace grid_map_planner;
       return false;
     }
 
+    grid_map::Index goal_index_adjusted;
+    if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted))
+    {
+       ROS_INFO("Moved goal");
+       goal_index = goal_index_adjusted;
+    }
+
     goals.push_back(goal_index);
+
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
       ROS_WARN("Unable to generate exploration transform!");
       return false;
@@ -197,7 +205,7 @@ using namespace grid_map_planner;
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
                                       start_index))
     {
-      ROS_WARN("Goal coords outside map, unable to plan!");
+      ROS_WARN("Start coords outside map, unable to plan!");
       return false;
     }
 
