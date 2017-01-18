@@ -15,6 +15,7 @@ Panels:
         - /Map1
         - /Path1
         - /Path1/Offset1
+        - /Pose1
       Splitter Ratio: 0.5
     Tree Height: 769
   - Class: rviz/Selection
@@ -114,7 +115,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Alpha: 0.5
-      Autocompute Intensity Bounds: false
+      Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
       Color Layer: exploration_transform
@@ -165,6 +166,21 @@ Visualization Manager:
       Topic: /path
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.1
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.3
+      Head Radius: 0.1
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05
+      Shape: Arrow
+      Topic: /goal
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -189,15 +205,15 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 22.274
+      Distance: 12.9056
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -5.6869
-        Y: -3.90627
+        X: 16.0271
+        Y: -5.02357
         Z: 9.91052e-06
       Name: Current View
       Near Clip Distance: 0.01
@@ -222,5 +238,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1918
-  X: 70
-  Y: 169
+  X: 619
+  Y: 611
