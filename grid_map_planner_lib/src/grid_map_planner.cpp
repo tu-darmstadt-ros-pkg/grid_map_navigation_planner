@@ -160,6 +160,7 @@ using namespace grid_map_planner;
       return false;
     }
 
+    // Adjust goal pose and try to move it farther away from walls if possible
     grid_map::Index goal_index_adjusted;
     if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted))
     {
@@ -174,8 +175,14 @@ using namespace grid_map_planner;
       return false;
     }
 
+    geometry_msgs::Pose adjusted_start;
+
+    grid_map_path_planning::adjustStartPoseIfOccupied(this->planning_map_,
+                              start,
+                              adjusted_start);
+
     if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
-                                                         start,
+                                                         adjusted_start,
                                                          plan,
                                                          plan_cost)){
       ROS_WARN("Find path on exploration transform failed!");
