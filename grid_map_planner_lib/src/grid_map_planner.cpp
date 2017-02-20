@@ -138,13 +138,13 @@ using namespace grid_map_planner;
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
                                       start_index))
     {
-      ROS_WARN("Goal coords outside map, unable to plan!");
+      ROS_WARN("Start coords %f, %f outside map, unable to plan!",start);
       return false;
     }
 
     if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
     {
-      ROS_WARN("Failed computing reachable obstacle cells!");
+      ROS_WARN("Failed computing reachable obstacle cells!",start.position.x, start.position.y);
       return false;
     }
 
@@ -156,7 +156,7 @@ using namespace grid_map_planner;
     if (!this->planning_map_.getIndex(grid_map::Position(original_goal.position.x, original_goal.position.y),
                                       goal_index))
     {
-      ROS_WARN("Goal coords outside map, unable to plan!");
+      ROS_WARN("Original goal coords %f, %f outside map, unable to plan!",original_goal.position.x, original_goal.position.y);
       return false;
     }
 

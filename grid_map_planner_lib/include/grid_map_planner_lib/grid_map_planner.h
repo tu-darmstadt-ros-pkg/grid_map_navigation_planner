@@ -105,6 +105,11 @@ public:
 
   bool setMap(const grid_map::GridMap& map);
 
+  grid_map::GridMap& getPlanningMap()
+  {
+    return planning_map_;
+  }
+
   const grid_map::GridMap& getPlanningMap() const
   {
     return planning_map_;
