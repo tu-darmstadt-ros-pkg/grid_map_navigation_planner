@@ -138,13 +138,13 @@ using namespace grid_map_planner;
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
                                       start_index))
     {
-      ROS_WARN("Start coords %f, %f outside map, unable to plan!",start);
+      ROS_WARN("Start coords %f outside map, unable to plan!",start);
       return false;
     }
 
     if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
     {
-      ROS_WARN("Failed computing reachable obstacle cells!",start.position.x, start.position.y);
+      ROS_WARN_STREAM("Failed computing reachable obstacle cells!" << start.position.x << start.position.y);
       return false;
     }
 
@@ -237,9 +237,15 @@ using namespace grid_map_planner;
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
+    
+    geometry_msgs::Pose adjusted_start;
+
+    grid_map_path_planning::adjustStartPoseIfOccupied(this->planning_map_,
+                              start,
+                              adjusted_start);
 
     if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
-                                                         start,
+                                                         adjusted_start,
                                                          plan,
                                                          plan_cost)){
       ROS_WARN("Find path on exploration transform failed!");
