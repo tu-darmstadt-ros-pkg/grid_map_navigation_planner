@@ -25,5 +25,5 @@ include_directories(
 add_library(grid_map_planner_global_plugin  src/grid_map_planner_global_plugin.cpp)
 target_link_libraries(grid_map_planner_global_plugin ${catkin_LIBRARIES})
 
-add_library(grid_map_planner_hector_global_plugin  src/grid_map_planner_hector_global_plugin.cpp)
-target_link_libraries(grid_map_planner_hector_global_plugin ${catkin_LIBRARIES})
+#add_library(grid_map_planner_hector_global_plugin  src/grid_map_planner_hector_global_plugin.cpp)
+#target_link_libraries(grid_map_planner_hector_global_plugin ${catkin_LIBRARIES})
