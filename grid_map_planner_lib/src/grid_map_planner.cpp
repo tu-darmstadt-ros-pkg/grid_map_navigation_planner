@@ -113,8 +113,14 @@ using namespace grid_map_planner;
       return false;
     }
 
+    geometry_msgs::Pose adjusted_start;
+
+    grid_map_path_planning::adjustStartPoseIfOccupied(this->planning_map_,
+                              start,
+                              adjusted_start);
+
     if(!grid_map_path_planning::findPathExplorationTransform(this->planning_map_,
-                                                         start,
+                                                         adjusted_start,
                                                          plan)){
       ROS_WARN("Find path on exploration transform failed!");
       return false;
