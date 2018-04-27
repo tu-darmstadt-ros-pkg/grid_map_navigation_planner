@@ -114,6 +114,11 @@ public:
   {
     return planning_map_;
   }
+  
+  void setDistanceThresholds(double dist_lethal, double dist_penalty)
+  {
+      
+  }
 
 private:
 
@@ -126,7 +131,9 @@ private:
 
   std::vector<grid_map::Index> obstacle_cells_;
   std::vector<grid_map::Index> frontier_cells_;
-
+  
+  double lethal_dist_;
+  double penalty_dist_;
 
 };
 }

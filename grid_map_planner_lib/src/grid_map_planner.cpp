@@ -39,6 +39,8 @@
 using namespace grid_map_planner;
 
   GridMapPlanner::GridMapPlanner()
+  : lethal_dist_(4.0)
+  , penalty_dist_(12.0)
   {
 
   }
