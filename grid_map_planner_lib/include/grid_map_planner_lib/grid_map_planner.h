@@ -115,9 +115,10 @@ public:
     return planning_map_;
   }
   
-  void setDistanceThresholds(double dist_lethal, double dist_penalty)
+  void setDistanceThresholds(double lethal_dist, double penalty_dist)
   {
-      
+      lethal_dist_ = lethal_dist;
+      penalty_dist_ = penalty_dist;
   }
 
 private:

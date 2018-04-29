@@ -110,7 +110,10 @@ using namespace grid_map_planner;
       return false;
     }
 
-    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, frontier_cells_)){
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
+        frontier_cells_,
+        lethal_dist_,
+        penalty_dist_)){
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
@@ -178,7 +181,10 @@ using namespace grid_map_planner;
 
     goals.push_back(goal_index);
 
-    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
+        goals,
+        lethal_dist_,
+        penalty_dist_)){
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
@@ -241,7 +247,10 @@ using namespace grid_map_planner;
 
     //std::cout << "map_goals size " << map_goals.size() << " goals size: " << goals.size() << "\n";
 
-    if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals)){
+    if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
+        goals,
+        lethal_dist_,
+        penalty_dist_)){
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
