@@ -41,14 +41,12 @@ using namespace grid_map_planner;
   GridMapPlanner::GridMapPlanner()
   : lethal_dist_(4.0)
   , penalty_dist_(12.0)
-  {
-
-  }
+  , penalty_weight_(1.0)
+  {}
   
   
   GridMapPlanner::~GridMapPlanner()
-  {
-  }
+  {}
 
   bool GridMapPlanner::setMap(const grid_map::GridMap& map)
   {
@@ -113,7 +111,8 @@ using namespace grid_map_planner;
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
         frontier_cells_,
         lethal_dist_,
-        penalty_dist_)){
+        penalty_dist_))
+    {
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
@@ -184,7 +183,9 @@ using namespace grid_map_planner;
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
         goals,
         lethal_dist_,
-        penalty_dist_)){
+        penalty_dist_,
+        penalty_weight_))
+    {
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
@@ -250,7 +251,9 @@ using namespace grid_map_planner;
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
         goals,
         lethal_dist_,
-        penalty_dist_)){
+        penalty_dist_,
+        penalty_weight_))
+    {
       ROS_WARN("Unable to generate exploration transform!");
       return false;
     }
