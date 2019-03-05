@@ -30,8 +30,8 @@
 
 #include <pluginlib/class_list_macros.h>
 
-//PLUGINLIB_DECLARE_CLASS(grid_map_planner_nav_plugin, GridMapPlannerGlobalPlugin, grid_map_planner_nav_plugin::GridMapPlannerGlobalPlugin, nav_core::BaseGlobalPlanner);
-PLUGINLIB_EXPORT_CLASS(grid_map_planner_nav_plugin::GridMapPlannerHectorGlobalPlugin,  hector_nav_core::ExplorationPlanner)
+//PLUGINLIB_EXPORT_CLASS(grid_map_planner_nav_plugin::GridMapPlannerGlobalPlugin, nav_core::BaseGlobalPlanner);
+PLUGINLIB_EXPORT_CLASS(grid_map_planner_nav_plugin::GridMapPlannerHectorGlobalPlugin, hector_nav_core::ExplorationPlanner)
 
 using namespace grid_map_planner_nav_plugin;
 
