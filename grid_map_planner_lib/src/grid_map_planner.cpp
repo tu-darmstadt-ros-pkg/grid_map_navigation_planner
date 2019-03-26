@@ -148,7 +148,7 @@ using namespace grid_map_planner;
     if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y),
                                       start_index))
     {
-      ROS_WARN("Start coords %f outside map, unable to plan!",start);
+      ROS_WARN("Start coords [%f, %f, %f] outside map, unable to plan!", start.position.x, start.position.y, start.position.z);
       return false;
     }
 
