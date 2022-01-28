@@ -107,6 +107,11 @@ using namespace grid_map_planner;
       ROS_WARN("Failed to compute distance transform!");
       return false;
     }
+    if (frontier_cells_.empty()) {
+      ROS_INFO_STREAM("Did not find any frontiers, map is completely explored.");
+      plan.clear();
+      return true;
+    }
 
     if (!grid_map_transforms::addExplorationTransform(this->planning_map_,
         frontier_cells_,

@@ -81,9 +81,11 @@ public:
                 float* plan_cost = 0);
 
   /**
-    * Given a start point, finds a frontier between known and unknown space and generates a plan to go there
+    * Given a start point, finds a frontier between known and unknown space and generates a plan to go there. If the map
+    * is fully discovered, an empty path will be returned
     * @param start The start point
-    * @param plan The plan to explore into unknown space
+    * @param plan The plan to explore into unknown space or empty plan
+    * @return Returns true, if planning was successful or the map is fully discovered
     */
   bool makeExplorationPlan(const geometry_msgs::Pose &start,std::vector<geometry_msgs::PoseStamped> &plan);
 
