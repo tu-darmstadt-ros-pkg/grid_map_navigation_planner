@@ -47,3 +47,7 @@ qtcreator-*
 CATKIN_IGNORE
 
 *.autosave
+
+# clion stuff
+.idea
+cmake-build-*
