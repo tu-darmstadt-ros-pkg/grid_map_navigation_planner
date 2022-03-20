@@ -208,6 +208,11 @@ using namespace grid_map_planner;
       ROS_WARN("Find path on exploration transform failed!");
       return false;
     }
+    
+    if (plan.size() == 0){
+      ROS_INFO_STREAM("Couldn't find path, returning empty one.");
+      return false;
+    }
 
     plan.back().pose.orientation = original_goal.orientation;
 
@@ -274,6 +279,11 @@ using namespace grid_map_planner;
                                                          plan,
                                                          plan_cost)){
       ROS_WARN("Find path on exploration transform failed!");
+      return false;
+    }
+    
+    if (plan.size() == 0){
+      ROS_INFO_STREAM("Couldn't find path, returning empty one.");
       return false;
     }
 
