@@ -42,6 +42,7 @@ using namespace grid_map_planner;
   : lethal_dist_(4.0)
   , penalty_dist_(12.0)
   , penalty_weight_(1.0)
+  , goal_dist_from_obstacles_(0.3)
   {}
   
   
@@ -177,7 +178,8 @@ using namespace grid_map_planner;
 
     // Adjust goal pose and try to move it farther away from walls if possible
     grid_map::Index goal_index_adjusted;
-    if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted))
+    float required_cell_distance = static_cast<float>(goal_dist_from_obstacles_) / planning_map_.getResolution();
+    if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted, 3.0, required_cell_distance, required_cell_distance))
     {
        ROS_INFO("Moved goal");
        goal_index = goal_index_adjusted;

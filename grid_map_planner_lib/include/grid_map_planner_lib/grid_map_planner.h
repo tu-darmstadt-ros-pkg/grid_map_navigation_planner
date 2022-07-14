@@ -126,6 +126,10 @@ public:
       penalty_weight_ = penalty_weight;
   }
 
+  void setGoalDistanceFromObstacles(double goal_dist) {
+    goal_dist_from_obstacles_ = goal_dist;
+  }
+
 private:
 
   enum LastMode{
@@ -141,6 +145,7 @@ private:
   double lethal_dist_;
   double penalty_dist_;
   double penalty_weight_;
+  double goal_dist_from_obstacles_;
 
 };
 }
