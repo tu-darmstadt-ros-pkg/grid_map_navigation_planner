@@ -158,10 +158,17 @@ using namespace grid_map_planner;
       return false;
     }
 
-    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
-    {
-      ROS_WARN_STREAM("Failed computing reachable obstacle cells!" << start.position.x << start.position.y);
-      return false;
+    // If there's no distance transform layer, map is new (and we assume if it comes with one, it should be valid)
+    // It can also happen that start seed is in different area in map, then also recompute distance transform.
+    if (!this->planning_map_.exists("distance_transform") ||
+        (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max() )){
+      if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+      {
+        ROS_WARN_STREAM("Failed computing distance transform!" << start.position.x << start.position.y);
+        return false;
+      }
+    }else{
+      ROS_DEBUG_STREAM("Using cached distance transform");
     }
 
 
