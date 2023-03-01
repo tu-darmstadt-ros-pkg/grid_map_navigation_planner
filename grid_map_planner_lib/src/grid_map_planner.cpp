@@ -42,6 +42,7 @@ using namespace grid_map_planner;
   : lethal_dist_(4.0)
   , penalty_dist_(12.0)
   , penalty_weight_(1.0)
+  , goal_dist_from_obstacles_(0.3)
   {}
   
   
@@ -157,10 +158,17 @@ using namespace grid_map_planner;
       return false;
     }
 
-    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
-    {
-      ROS_WARN_STREAM("Failed computing reachable obstacle cells!" << start.position.x << start.position.y);
-      return false;
+    // If there's no distance transform layer, map is new (and we assume if it comes with one, it should be valid)
+    // It can also happen that start seed is in different area in map, then also recompute distance transform.
+    if (!this->planning_map_.exists("distance_transform") ||
+        (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max() )){
+      if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+      {
+        ROS_WARN_STREAM("Failed computing distance transform!" << start.position.x << start.position.y);
+        return false;
+      }
+    }else{
+      ROS_DEBUG_STREAM("Using cached distance transform");
     }
 
 
@@ -177,7 +185,8 @@ using namespace grid_map_planner;
 
     // Adjust goal pose and try to move it farther away from walls if possible
     grid_map::Index goal_index_adjusted;
-    if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted))
+    float required_cell_distance = static_cast<float>(goal_dist_from_obstacles_) / planning_map_.getResolution();
+    if (grid_map_path_planning::findValidClosePoseExplorationTransform(this->planning_map_, goal_index, goal_index_adjusted, 3.0, required_cell_distance, required_cell_distance))
     {
        ROS_INFO("Moved goal");
        goal_index = goal_index_adjusted;
@@ -308,3 +317,128 @@ using namespace grid_map_planner;
 
     return true;
   }
+
+bool GridMapPlanner::makePlan(const std::vector<geometry_msgs::Pose>& starts, const geometry_msgs::Pose& original_goal,
+                              std::vector<std::vector<geometry_msgs::PoseStamped>>& plans,
+                              std::vector<float>* plan_costs)
+{
+  // prepare output vectors
+  plans.resize(starts.size());
+  if (plan_costs)
+  {
+    plan_costs->resize(starts.size(), 0);
+  }
+
+  if (!this->planning_map_.exists("occupancy"))
+  {
+    ROS_ERROR("Tried to generate plan to goal, but map has no occupancy layer!");
+    return false;
+  }
+
+  grid_map::Index goal_index;
+
+  if (!this->planning_map_.getIndex(grid_map::Position(original_goal.position.x, original_goal.position.y), goal_index))
+  {
+    ROS_WARN("Original goal coords %f, %f outside map, unable to plan!", original_goal.position.x,
+             original_goal.position.y);
+    return false;
+  }
+
+  for (int i = 0; i < starts.size(); i++)
+  {
+    geometry_msgs::Pose start = starts[i];
+
+    grid_map::Index start_index;
+
+    if (!this->planning_map_.getIndex(grid_map::Position(start.position.x, start.position.y), start_index))
+    {
+      ROS_WARN("Start coords [%f, %f, %f] outside map, unable to plan!", start.position.x, start.position.y,
+               start.position.z);
+      continue;
+    }
+
+    // If there's no distance transform layer, map is new (and we assume if it comes with one, it should be valid)
+    // It can also happen that start seed is in different area in map, then also recompute distance transform.
+    bool computed_distance_transform;
+    if (!this->planning_map_.exists("distance_transform") ||
+        (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max()))
+    {
+      if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_,
+                                                     frontier_cells_))
+      {
+        ROS_WARN_STREAM("Failed computing distance transform! " << start.position.x << start.position.y);
+        continue;
+      }
+      computed_distance_transform = true;
+    }
+    else
+    {
+      ROS_DEBUG_STREAM("Using cached distance transform");
+      computed_distance_transform = false;
+    }
+
+    // only compute new exploration transform if it does not exist,
+    //  a new distance transform was computed or if the existing exploration transform was computed for another goal
+    if (!this->planning_map_.exists("exploration_transform") ||
+        computed_distance_transform || 
+        this->planning_map_.at("exploration_transform", goal_index) != 0)
+    {
+      // Adjust goal pose and try to move it farther away from walls if possible
+      grid_map::Index goal_index_adjusted;
+      float required_cell_distance = static_cast<float>(goal_dist_from_obstacles_) / planning_map_.getResolution();
+      if (grid_map_path_planning::findValidClosePoseExplorationTransform(
+              this->planning_map_, goal_index, goal_index_adjusted, 3.0, required_cell_distance,
+              required_cell_distance))
+      {
+        ROS_INFO("Moved goal");
+        goal_index = goal_index_adjusted;
+      }
+
+      std::vector<grid_map::Index> goals;
+      goals.push_back(goal_index);
+
+      // compute exploration transform for the goal
+      if (!grid_map_transforms::addExplorationTransform(this->planning_map_, goals, lethal_dist_, penalty_dist_,
+                                                        penalty_weight_))
+      {
+        ROS_WARN("Unable to generate exploration transform!");
+        continue;
+      }
+    }
+
+    geometry_msgs::Pose adjusted_start;
+
+    grid_map_path_planning::adjustStartPoseIfOccupied(this->planning_map_, start, adjusted_start);
+
+    std::vector<geometry_msgs::PoseStamped> plan;
+    float plan_cost;
+
+    // get path from start to goal
+    if (!grid_map_path_planning::findPathExplorationTransform(this->planning_map_, adjusted_start, plan, &plan_cost))
+    {
+      ROS_WARN_STREAM("Find path on exploration transform failed for start (" << adjusted_start.position.x << ", "
+                                                                              << adjusted_start.position.y << ", "
+                                                                              << adjusted_start.position.z << ")!");
+      continue;
+    }
+
+    if (plan.size() == 0)
+    {
+      ROS_WARN_STREAM("Couldn't find path, returning empty one for start (" << adjusted_start.position.x << ", "
+                                                                            << adjusted_start.position.y << ", "
+                                                                            << adjusted_start.position.z << ").");
+      continue;
+    }
+
+    plan.back().pose.orientation = original_goal.orientation;
+
+    plans[i] = plan;
+
+    if (plan_costs)
+    {
+      plan_costs->at(i) = plan_cost;
+    }
+  }
+
+  return true;
+}

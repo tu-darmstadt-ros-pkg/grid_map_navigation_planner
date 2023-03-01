@@ -81,6 +81,19 @@ public:
                 float* plan_cost = 0);
 
   /**
+   * Plans from multiple start points to the same goal.
+   * @param start The start points
+   * @param goal The goal point
+   * @param plan The generated plans in the same order as the start points (first path leads from the first start to goal and so on)
+   * @param plan_cost The list of plan cost for the returned plans in the same order as the start points
+   */
+  bool makePlan(const std::vector<geometry_msgs::Pose> &starts,
+                const geometry_msgs::Pose &original_goal,
+                std::vector<std::vector<geometry_msgs::PoseStamped>> &plans,
+                std::vector<float>* plan_costs = 0);
+
+
+  /**
     * Given a start point, finds a frontier between known and unknown space and generates a plan to go there. If the map
     * is fully discovered, an empty path will be returned
     * @param start The start point
@@ -126,6 +139,10 @@ public:
       penalty_weight_ = penalty_weight;
   }
 
+  void setGoalDistanceFromObstacles(double goal_dist) {
+    goal_dist_from_obstacles_ = goal_dist;
+  }
+
 private:
 
   enum LastMode{
@@ -141,6 +158,7 @@ private:
   double lethal_dist_;
   double penalty_dist_;
   double penalty_weight_;
+  double goal_dist_from_obstacles_;
 
 };
 }
