@@ -103,7 +103,8 @@ using namespace grid_map_planner;
       return false;
     }
 
-    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
+                                                   min_frontier_dist_))
     {
       ROS_WARN("Failed to compute distance transform!");
       return false;
@@ -162,7 +163,8 @@ using namespace grid_map_planner;
     // It can also happen that start seed is in different area in map, then also recompute distance transform.
     if (!this->planning_map_.exists("distance_transform") ||
         (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max() )){
-      if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+      if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
+                                                     min_frontier_dist_))
       {
         ROS_WARN_STREAM("Failed computing distance transform!" << start.position.x << start.position.y);
         return false;
@@ -250,7 +252,8 @@ using namespace grid_map_planner;
       return false;
     }
 
-    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_))
+    if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
+                                                   min_frontier_dist_))
     {
       ROS_WARN("Failed computing reachable obstacle cells!");
       return false;
@@ -364,7 +367,7 @@ bool GridMapPlanner::makePlan(const std::vector<geometry_msgs::Pose>& starts, co
         (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max()))
     {
       if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_,
-                                                     frontier_cells_))
+                                                     frontier_cells_, min_frontier_dist_))
       {
         ROS_WARN_STREAM("Failed computing distance transform! " << start.position.x << start.position.y);
         continue;
