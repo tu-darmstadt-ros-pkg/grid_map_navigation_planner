@@ -143,6 +143,10 @@ public:
     goal_dist_from_obstacles_ = goal_dist;
   }
 
+  void setMinFrontierDistance(float min_frontier_dist) {
+    min_frontier_dist_ = min_frontier_dist;
+  }
+
 private:
 
   enum LastMode{
@@ -159,6 +163,7 @@ private:
   double penalty_dist_;
   double penalty_weight_;
   double goal_dist_from_obstacles_;
+  float min_frontier_dist_;
 
 };
 }
