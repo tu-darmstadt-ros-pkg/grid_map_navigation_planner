@@ -104,7 +104,7 @@ using namespace grid_map_planner;
     }
 
     if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
-                                                   min_frontier_dist_))
+                                                   min_frontier_dist_, min_frontier_size_))
     {
       ROS_WARN("Failed to compute distance transform!");
       return false;
@@ -164,7 +164,7 @@ using namespace grid_map_planner;
     if (!this->planning_map_.exists("distance_transform") ||
         (this->planning_map_.at("distance_transform", start_index) == std::numeric_limits<float>::max() )){
       if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
-                                                     min_frontier_dist_))
+                                                     min_frontier_dist_, min_frontier_size_))
       {
         ROS_WARN_STREAM("Failed computing distance transform!" << start.position.x << start.position.y);
         return false;
@@ -251,9 +251,8 @@ using namespace grid_map_planner;
       ROS_WARN("Start coords outside map, unable to plan!");
       return false;
     }
-
     if (!grid_map_transforms::addDistanceTransform(this->planning_map_, start_index, obstacle_cells_, frontier_cells_,
-                                                   min_frontier_dist_))
+                                                   min_frontier_dist_,min_frontier_size_))
     {
       ROS_WARN("Failed computing reachable obstacle cells!");
       return false;
