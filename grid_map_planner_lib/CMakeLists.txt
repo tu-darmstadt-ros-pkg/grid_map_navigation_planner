@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   grid_map_proc
   nav_msgs
   roscpp
+  tf2_geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -106,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES grid_map_planner_lib
-  CATKIN_DEPENDS geometry_msgs grid_map_core grid_map_cv grid_map_msgs grid_map_ros grid_map_proc nav_msgs roscpp
+  CATKIN_DEPENDS geometry_msgs grid_map_core grid_map_cv grid_map_msgs grid_map_ros grid_map_proc nav_msgs roscpp tf2_geometry_msgs
 #  DEPENDS system_lib
 )
 
