@@ -115,8 +115,38 @@ public:
   //bool doAlternativeExploration(const geometry_msgs::PoseStamped &start,std::vector<geometry_msgs::PoseStamped> &plan, std::vector<geometry_msgs::PoseStamped> &oldplan);
   //bool findFrontiersCloseToPath(std::vector<geometry_msgs::PoseStamped> &frontiers);
   //bool findInnerFrontier(std::vector<geometry_msgs::PoseStamped> &innerFrontier);
-  
 
+  /**
+   * Get the closest valid waypoint for a pose in the opposite direction of the pose's orientation.
+   * Example use case: POIs have the orientation of the sensor, so when looking for a waypoint from which this POI can
+   * be inspected, it needs to be searched in the opposite direction.
+   *
+   * @param pose The pose for which the waypoint is searched.
+   * @param min_distance_to_pose The minimum allowed distance to the pose.
+   * @param max_distance_to_pose The maximum allowed distance to the pose.
+   * @param min_distance_to_obstacle The minimum allowed distance to obstacles.
+   * @param close_waypoint The found waypoint.
+   *
+   * @return True if a valid waypoint was found, false otherwise.
+   */
+  bool getValidCloseWaypointForPose(const geometry_msgs::Pose& pose, double min_distance_to_pose,
+                                    double max_distance_to_pose, double min_distance_to_obstacle,
+                                    geometry_msgs::Pose& close_waypoint);
+
+  /**
+   * Get a close valid waypoint for a given position. Searches in all directions.
+   *
+   * @param position The position for which the waypoint is searched.
+   * @param min_distance_to_position The minimum allowed distance to the position.
+   * @param max_distance_to_position The maximum allowed distance to the position.
+   * @param min_distance_to_obstacle The minimum allowed distance to obstacles.
+   * @param close_waypoint The found waypoint.
+   *
+   * @return True if a valid waypoint was found, false otherwise.
+   */
+  bool getValidCloseWaypointForPosition(const geometry_msgs::Point& position, double min_distance_to_position,
+                                        double max_distance_to_position, double min_distance_to_obstacle,
+                                        geometry_msgs::Pose& close_waypoint);
 
   bool setMap(const grid_map::GridMap& map);
 
