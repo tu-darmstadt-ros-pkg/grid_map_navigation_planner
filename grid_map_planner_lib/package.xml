@@ -19,6 +19,7 @@
   <depend>grid_map_proc</depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
+  <depend>tf2_geometry_msgs</depend>
 
   <export>
   </export>
