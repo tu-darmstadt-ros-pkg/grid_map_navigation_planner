@@ -184,11 +184,16 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ## Testing ##
 #############
 
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_grid_map_planner_lib.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+if(CATKIN_ENABLE_TESTING)
+  find_package(er_qa_tools_cpp REQUIRED)
+  find_package(yaml-cpp REQUIRED)
+  find_package(OpenCV REQUIRED)
+  include_directories(${OpenCV_INCLUDE_DIRS})
+  er_add_cpp_gtest(${PROJECT_NAME}_test
+    SOURCES
+      test/unit/test_planning_safety_gtest.cpp
+      test/unit/test_straight_line_example_gtest.cpp
+    DEPENDENCIES ${PROJECT_NAME} yaml-cpp ${OpenCV_LIBRARIES}
+    WARNING_LEVEL EXTRA
+  )
+endif()

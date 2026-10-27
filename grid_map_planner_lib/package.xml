@@ -20,6 +20,10 @@
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
 
+  <test_depend>er_qa_tools_cpp</test_depend>
+  <test_depend>yaml-cpp</test_depend>
+  <test_depend>libopencv-dev</test_depend>
+
   <export>
   </export>
 </package>
